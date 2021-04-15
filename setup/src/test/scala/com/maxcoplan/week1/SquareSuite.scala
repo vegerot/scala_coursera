@@ -1,6 +1,6 @@
 package com.maxcoplan.week1
 import com.maxcoplan.week1.SquareRoot.sqrt
-import org.junit._
+import org.junit.{Assert, Rule, Test}
 
 class SquareSuite {
 

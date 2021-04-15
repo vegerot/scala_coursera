@@ -6,10 +6,11 @@ object Main extends App {
 
 
 object SquareRoot {
+  private val DELTA = 0.0001
   private def abs(x: Double) = if (x<0) -x else x
 
   // private def isGoodEnough(guess: Double, x: Double): Boolean = abs(guess*guess - x) < 0.001
-  private def isGoodEnough(guess: Double, x: Double): Boolean = abs(x / guess - guess )< 0.0001
+  private def isGoodEnough(guess: Double, x: Double): Boolean = abs(x / guess - guess ) < DELTA
 
   private def sqrtIter(guess: Double, x: Double): Double =
     if (isGoodEnough(guess, x)) guess
