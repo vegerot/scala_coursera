@@ -77,7 +77,7 @@ trait Huffman extends HuffmanInterface {
   def times(chars: List[Char]): List[(Char, Int)] = {
     def helper2(c: Char, next: List[(Char, Int)], curr: List[(Char, Bit)]): scala.List[(Char, Huffman.this.Bit)] = curr match {
       case Nil => next ::: List((c, 1))
-      case (x,y) :: xs if x == c => next ::: List((x,y+1)) ::: curr
+      case (x,y) :: _ if x == c => next ::: List((x,y+1)) ::: curr
       case x :: xs => helper2(c, next ::: List(x), xs)
     }
     @tailrec
@@ -165,7 +165,7 @@ trait Huffman extends HuffmanInterface {
   def decode(tree: CodeTree, bits: List[Bit]): List[Char] = {
     def helper(tree: CodeTree, bits: List[Bit]): (Char, List[Bit]) = tree match {
       case Leaf(c,_) => (c, bits)
-      case Fork(l,r,c,_)=> {
+      case Fork(l,r,_,_)=> {
         val next = if (bits.head == 0) l else r
         helper(next, bits.tail)
       }
@@ -229,8 +229,8 @@ trait Huffman extends HuffmanInterface {
    */
   def codeBits(table: CodeTable)(char: Char): List[Bit] = table match {
     case Nil => Nil
-    case (x,y)::tail if x == char => y
-    case head :: tail => codeBits(tail)(char)
+    case (x,y):: _ if x == char => y
+    case _ :: tail => codeBits(tail)(char)
   }
 
   /**
@@ -243,8 +243,8 @@ trait Huffman extends HuffmanInterface {
    */
   def convert(tree: CodeTree): CodeTable = {
     def helper(tree: CodeTree, acc: CodeTable, bits: List[Bit]): CodeTable = tree match {
-      case Leaf(c,w) => (c,bits) :: acc
-      case Fork(l,r,c,w)=> mergeCodeTables(helper(l, acc, bits ::: List(0)), helper(r, acc, bits:::List(1)))
+      case Leaf(c,_) => (c,bits) :: acc
+      case Fork(l,r,_,_)=> mergeCodeTables(helper(l, acc, bits ::: List(0)), helper(r, acc, bits:::List(1)))
     }
 
     helper(tree, Nil, Nil)
@@ -267,7 +267,7 @@ trait Huffman extends HuffmanInterface {
     def helper1(table: CodeTable)(text: List[Char]): List[Bit] = {
       def helper2(table: CodeTable, curr: Char): List[Bit] = table match {
         case Nil => Nil
-        case head :: tail if head._1 == curr => head._2
+        case head :: _ if head._1 == curr => head._2
         case _ :: xs => helper2(xs, curr)
       }
 
@@ -278,6 +278,10 @@ trait Huffman extends HuffmanInterface {
     }
     helper1(convert(tree))(text)
   }
+
+  def scalarProduct(xs: List[Double], ys: List[Double]) =
+    (for {x <- xs
+         y <- ys} yield (x * y)).sum
 }
 
 object Huffman extends Huffman
